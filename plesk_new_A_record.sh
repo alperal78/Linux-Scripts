@@ -1,5 +1,4 @@
 ### Bash Script: Add Plesk A Record
-```bash
 #!/bin/bash
 
 # Check if required arguments are provided
