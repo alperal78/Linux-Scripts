@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - '80:80'   # Public HTTP Traffic
+      - '443:443' # Public HTTPS Traffic
+      - '81:81'   # Admin Web GUI Dashboard
+    environment:
+      - TZ=America/Chicago
+      # Optional: Explicitly adjust database file locking behavior if needed on network storage
+      # - DB_SQLITE_FILE=/data/database.sqlite 
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+    networks:
+      - npm_bridge
+
+networks:
+  npm_bridge:
+    external: true
+	
+	
+	
+##docker network create npm_bridge
+##docker compose up -d
