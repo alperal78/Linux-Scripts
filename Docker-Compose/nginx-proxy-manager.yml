@@ -22,8 +22,6 @@ services:
 networks:
   npm_bridge:
     external: true
-	
-	
-	
+
 ##docker network create npm_bridge
 ##docker compose up -d
