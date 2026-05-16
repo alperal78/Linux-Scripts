@@ -14,19 +14,21 @@ while true; do
     echo -e "${BLUE}==================================================${NC}"
     echo -e "          ${GREEN}ntfy2 User & ACL Management Menu${NC}"
     echo -e "${BLUE}==================================================${NC}"
-    echo "1) List All Users"
-    echo "2) Create a New Admin User"
-    echo "3) Change a User's Role to Admin"
-    echo "4) Delete a User"
-    echo "5) Check Current Access Control Lists (ACLs)"
-    echo "6) Reset a User's Password"
-    echo "7) Create a Limited (Standard) User"
-    echo "8) Deny a User All Access by Default (* -> none)"
-    echo "9) Grant Write-Only Access to a Specific Topic"
-    echo "10) Verify Settings (View Permissions)"
-    echo "q) Exit"
+    echo "1)  List All Users"
+    echo "2)  Create a New Admin User"
+    echo "3)  Change a User's Role to Admin"
+    echo "4)  Delete a User"
+    echo "5)  Check Current Access Control Lists (ACLs)"
+    echo "6)  Reset a User's Password"
+    echo "7)  Create a Limited (Standard) User"
+    echo "8)  Deny a User All Access by Default (* -> none)"
+    echo "9)  Grant Write-Only Access to a Specific User"
+    echo "10) Create a Public Bulletin Board (Open Read & Write)"
+    echo "11) Create a Drop Box Topic (Open Write, Private Read)"
+    echo "12) Verify Settings (View Permissions)"
+    echo "q)  Exit"
     echo -e "${BLUE}==================================================${NC}"
-    read -p "Select an option [1-10 or q]: " choice
+    read -p "Select an option [1-12 or q]: " choice
 
     case $choice in
         1)
@@ -98,7 +100,7 @@ while true; do
             fi
             ;;
         9)
-            echo -e "\n${GREEN}--> Granting Write-Only Access...${NC}"
+            echo -e "\n${GREEN}--> Granting Write-Only Access to User...${NC}"
             read -p "Enter username: " write_user
             read -p "Enter topic name (e.g., server-alerts): " topic_name
             if [ -n "$write_user" ] && [ -n "$topic_name" ]; then
@@ -108,6 +110,26 @@ while true; do
             fi
             ;;
         10)
+            echo -e "\n${GREEN}--> Creating Public Bulletin Board (Open Read & Write)...${NC}"
+            read -p "Enter the topic name to open completely: " pub_topic
+            if [ -n "$pub_topic" ]; then
+                docker exec -it "$CONTAINER_NAME" ntfy access "*" "$pub_topic" read-write
+                echo -e "${GREEN}Topic '$pub_topic' is now open to everyone for reading and writing.${NC}"
+            else
+                echo -e "${RED}Topic name cannot be empty.${NC}"
+            fi
+            ;;
+        11)
+            echo -e "\n${GREEN}--> Creating Drop Box Topic (Open Write, Private Read)...${NC}"
+            read -p "Enter the topic name for passwordless log dumps: " drop_topic
+            if [ -n "$drop_topic" ]; then
+                docker exec -it "$CONTAINER_NAME" ntfy access "*" "$drop_topic" write
+                echo -e "${GREEN}Topic '$drop_topic' is now write-only for anonymous guests.${NC}"
+            else
+                echo -e "${RED}Topic name cannot be empty.${NC}"
+            fi
+            ;;
+        12)
             echo -e "\n${GREEN}--> Verifying active settings...${NC}"
             docker exec -it "$CONTAINER_NAME" ntfy access
             ;;
@@ -116,7 +138,7 @@ while true; do
             break
             ;;
         *)
-            echo -e "\n${RED}Invalid option. Please choose a number between 1 and 10, or q to quit.${NC}"
+            echo -e "\n${RED}Invalid option. Please choose a number between 1 and 12, or q to quit.${NC}"
             ;;
     esac
     
@@ -124,3 +146,4 @@ while true; do
     read -p "Press [Enter] to return to the menu..." clear_key
     clear
 done
+
